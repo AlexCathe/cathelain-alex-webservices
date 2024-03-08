@@ -1,4 +1,4 @@
-import authenticationService from '#src/services/authenticationServices'
+import authenticationServices from '#src/services/authenticationServices'
 import personnesServices from '#src/services/personnesServices'
 import { signJwt, verifyJwt } from '#src/utils/jwtoken'
 
@@ -9,20 +9,20 @@ const exposeController = {
         const user = await personnesServices.getOnePersonneByEmail(body)
         try {
             if (user?.length === 0 || !user) return res.sendStatus(401)
-            const comparePwd = await authenticationService.comparePassword({ password: body.password, storedPassword: user.password })
+            const comparePwd = await authenticationServices.comparePassword({ password: body.password, storedPassword: user.password })
             const tokenPayload = {
                 id: user.id,
                 nom: user.nom,
                 prenom: user.prenom,
                 email: user.email,
-                role:user.role
+                role: user.role
             }
             if (comparePwd) {
                 const token = signJwt({ payload: tokenPayload, expiresIn: '5min' })
                 const refreshToken = signJwt({ payload: tokenPayload, expiresIn: '7d' })
                 const accessToken = { access_token: token, token_type: 'Bearer' }
-                const updateRefresh = await personnesServices.updatePersonneToken(user.id,refreshToken)
-                return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).json(accessToken) 
+                const updateRefresh = await personnesServices.updatePersonneToken(user.id, refreshToken)
+                return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).json(accessToken)
             }
             return res.sendStatus(401)
         }
@@ -33,13 +33,13 @@ const exposeController = {
     },
 
     refreshToken: async (req, res) => {
-        const { cookie } = req
+        const { cookie } = req.headers
         if (!cookie?.refreshToken) return res.sendStatus(401)
         const refreshToken = cookie.refreshToken
         res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'None', secure: true })
         // is refreshToken still valid on our side? 
 
-        const foundUser = await personnesService.getPersonneByRefreshToken({ refreshToken })
+        const foundUser = await personnesServices.getPersonneByRefreshToken({refreshToken})
         if (!foundUser) return res.sendStatus(403)
         try {
             const decoded = verifyJwt(refreshToken)
@@ -51,7 +51,7 @@ const exposeController = {
             }
             if (decoded.email !== foundUser.email) return res.sendStatus(403)
             const accessToken = signJwt({ payload: tokenPayload, expiresIn: '1d' })
-            return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).json(accessToken) 
+            return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).json(accessToken)
         } catch (error) {
             console.log(error)
             return res.sendStatus(401); // expired refresh token
