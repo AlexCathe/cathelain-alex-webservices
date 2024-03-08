@@ -6,8 +6,8 @@ const router = express.Router();
 
 // router.get('/',usersController.allUsers);
 
-router.post('/', authGuard.protect, projetsController.createProjet);
 router.get('/', projetsController.getAllProjets);
+router.post('/', authGuard.protect, projetsController.createProjet);
 router.get('/:id', authGuard.protect, projetsController.getOneProjetById);
 router.put('/:id', authGuard.protect, projetsController.updateProjet);
 router.delete('/:id', authGuard.protect, projetsController.deleteProjet);

@@ -20,8 +20,8 @@ const exposeController = {
                 const token = signJwt({ payload: tokenPayload, expiresIn: '5min' })
                 const refreshToken = signJwt({ payload: tokenPayload, expiresIn: '7d' })
                 const accessToken = { access_token: token, token_type: 'Bearer' }
-                // const updateRefresh = await usersService.updateUserToken({userId:user._id,refreshToken})
-                return res.json(accessToken)
+                const updateRefresh = await personnesServices.updatePersonneToken(user.id,refreshToken)
+                return res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'strict' }).json(accessToken) 
             }
             return res.sendStatus(401)
         }
@@ -32,9 +32,9 @@ const exposeController = {
     },
 
     refreshToken: async (req, res) => {
-        const { cookies } = req
-        if (!cookies?.refreshToken) return res.sendStatus(401)
-        const refreshToken = cookies.refreshToken
+        const { cookie } = req
+        if (!cookie?.refreshToken) return res.sendStatus(401)
+        const refreshToken = cookie.refreshToken
         res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'None', secure: true })
         // is refreshToken still valid on our side? 
 

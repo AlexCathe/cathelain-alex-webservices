@@ -22,7 +22,8 @@ const personnesServices = {
     },
 
     getAllPersonnes: async () => {
-        const { data, error } = await supabase.from('personne').select()
+        const { data, error } = await supabase.from('personne').select("*, competence_personne(*)")
+        console.log(data[0])
         if (error) {
             throw error
         }
@@ -54,6 +55,14 @@ const personnesServices = {
             }
         }
         const { data, error } = await supabase.from('personne').update(newUserData).eq('id', id).select()
+        if (error) {
+            throw error
+        }
+        return data
+    },
+
+    updatePersonneToken: async (id, refreshToken) => {
+        const { data, error } = await supabase.from('personne').update({ refreshToken }).eq('id', id).select()
         if (error) {
             throw error
         }
