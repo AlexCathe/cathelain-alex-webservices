@@ -8,13 +8,14 @@ const exposeController = {
         const { body } = req
         const user = await personnesServices.getOnePersonneByEmail(body)
         try {
-            if (user.length === 0) return res.sendStatus(401)
+            if (user?.length === 0 || !user) return res.sendStatus(401)
             const comparePwd = await authenticationService.comparePassword({ password: body.password, storedPassword: user.password })
             const tokenPayload = {
+                id: user.id,
                 nom: user.nom,
                 prenom: user.prenom,
                 email: user.email,
-                // roles:user.roles
+                role:user.role
             }
             if (comparePwd) {
                 const token = signJwt({ payload: tokenPayload, expiresIn: '5min' })

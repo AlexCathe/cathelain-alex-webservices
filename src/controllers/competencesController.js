@@ -26,7 +26,7 @@ const competencesController = {
         const {id} = req.params
         try {
             const oneCompetence = await competencesService.getOneCompetenceById(id)
-            if (oneCompetence.length == 0) {
+            if (oneCompetence?.length == 0 || !oneCompetence) {
                 return res.sendStatus(404)
             }
             return res.json(oneCompetence)

@@ -15,14 +15,16 @@ const personnesController = {
     },
 
     getAllPersonnes:async (req,res)=>{
-        const allUsers = await personnesServices.getAllPersonnes()
+        const {query} = req
+        const allUsers = await personnesServices.getAllPersonnes(query)
         return res.json(allUsers)
     },
 
     getOnePersonne:async (req,res)=>{
         const {id} = req.params
         const oneUser = await personnesServices.getOnePersonneById(id)
-        if (oneUser.length == 0) {
+        console.log(oneUser)
+        if (oneUser?.length == 0 || !oneUser) {
             return res.sendStatus(404)
         }
         return res.json(oneUser)

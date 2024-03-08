@@ -13,17 +13,27 @@ const personnesServices = {
             password: hash
         }
         try {
-            await supabase.from().insert([newUser])
-            const { data, error } = await supabase.from('personne').insert({ nom: newUserData.nom, prenom: newUserData.prenom, email: newUserData.email, password: newUserData.password }).select()
+            const { data, error } = await supabase.from('personne').insert({ nom: newUserData.nom, prenom: newUserData.prenom, email: newUserData.email, password: newUserData.password, role: newUserData.role }).select()
             return data
         } catch (error) {
             throw error
         }
     },
 
-    getAllPersonnes: async () => {
-        const { data, error } = await supabase.from('personne').select("*, competence_personne(*)")
-        console.log(data[0])
+    getAllPersonnes: async ({competence}) => {
+        if(competence){ 
+            const {data, error} = await supabase.from('personne').select("*, competence(libelle)").eq('competence.libelle', competence)
+            var personnes = []
+            data.forEach(personne => {
+                if(personne.competence.length > 0)
+                    personnes.push(personne)
+            });
+            if (error) {
+                throw error
+            }
+            return personnes
+        }
+        const { data, error } = await supabase.from('personne').select("*, competence(libelle)")
         if (error) {
             throw error
         }
@@ -31,12 +41,13 @@ const personnesServices = {
     },
 
     getOnePersonneById: async (id) => {
-        const { data, error } = await supabase.from('personne').select().eq('id', id)
+        const { data, error } = await supabase.from('personne').select('*, competence(libelle)').eq('id', id)
         if (error) {
             throw error
         }
-        return data
+        return data[0]
     },
+
 
     updatePersonne: async (id, rawData) => {
         let newUserData = {}

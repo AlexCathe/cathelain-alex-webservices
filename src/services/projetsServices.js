@@ -9,7 +9,23 @@ const projetsServices = {
         return data
     },
 
-    getAllProjets: async () => {
+    getAllProjets: async ({sort}) => {
+        if(sort){
+            if(sort === "-1"){
+                const { data, error } = await supabase.from('projet').select().order('created_at', {ascending: false})
+                if (error) {
+                    throw error
+                }
+                return data
+            }
+            else{
+                const { data, error } = await supabase.from('projet').select().order('created_at', {ascending: true})
+                if (error) {
+                    throw error
+                }
+                return data
+            }
+        }
         const { data, error } = await supabase.from('projet').select()
         if (error) {
             throw error
@@ -22,7 +38,7 @@ const projetsServices = {
         if (error) {
             throw error
         }
-        return data
+        return data[0]
     },
 
     updateProjet: async (id, rawData) => {

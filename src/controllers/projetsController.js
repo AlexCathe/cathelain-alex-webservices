@@ -13,8 +13,9 @@ const projetsController = {
     },
 
     getAllProjets:async (req, res)=> {
+        const {query} = req
         try {
-            const allprojets = await projetsService.getAllProjets()
+            const allprojets = await projetsService.getAllProjets(query)
             return res.json(allprojets)
         } catch (error) {
             return res.sendStatus(400)
@@ -25,7 +26,7 @@ const projetsController = {
         const {id} = req.params
         try {
             const oneprojet = await projetsService.getOneProjetById(id)
-            if (oneprojet.length == 0) {
+            if (oneprojet?.length == 0 || !oneprojet) {
                 return res.sendStatus(404)
             }
             return res.json(oneprojet)

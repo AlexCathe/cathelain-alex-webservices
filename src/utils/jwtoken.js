@@ -1,13 +1,12 @@
 import jwt          from 'jsonwebtoken'
-const secretKey     = 'secret_key';
-
+const {JWT_SECRET_KEY} = process.env ;
 
 const signJwt = ({payload,expiresIn})=>{
-    return jwt.sign(payload, secretKey, { expiresIn });
+    return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn });
 }
     
 const verifyJwt = (payload)=>{
-    return jwt.verify(payload, secretKey);
+    return jwt.verify(payload, JWT_SECRET_KEY);
 }
 
 

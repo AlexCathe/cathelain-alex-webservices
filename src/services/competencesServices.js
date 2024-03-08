@@ -2,6 +2,7 @@ import supabase from '#src/db/connect'
 
 const competencesServices = {
     createCompetence: async (competence) => {
+        console.log(competence)
         const { data, error } = await supabase.from('competence').insert([{libelle: competence.libelle}]).select()
         if (error) {
             throw error
@@ -22,7 +23,7 @@ const competencesServices = {
         if (error) {
             throw error
         }
-        return data
+        return data[0]
     },
 
     updateCompetence: async (id, rawData) => {

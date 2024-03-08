@@ -14,6 +14,7 @@ const exposeMiddleware = {
             const cleanAccess = accessToken.slice(7, accessToken.length);
             try {
                 const verify = verifyJwt(cleanAccess)
+                req.userId = verify.id
                 return next()
             } catch (error) {
                 console.log(error.message)
